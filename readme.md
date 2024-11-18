@@ -33,3 +33,20 @@ attendance=# \du
 attendance=# GRANT ALL PRIVILEGES ON DATABASE attendance TO postgres;
 GRANT
 ```
+
+---
+
+├── cmd/
+│   └── api/
+│       └── main.go       # Entry point
+├── internal/
+│   ├── handler/
+│   │   └── attendance.go # HTTP handlers
+│   ├── model/
+│   │   └── attendance.go # Data structures
+│   ├── db/
+│   │   └── postgres.go   # Database connection and queries
+│   └── api/
+│       └── response.go   # Response helpers
+└── config/
+    └── config.go         # Configuration handling
