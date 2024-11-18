@@ -12,6 +12,18 @@ type DB struct {
 	pool *pgxpool.Pool
 }
 
+func NewDB(dbURL string) (*DB, error) {
+	pool, err := pgxpool.New(context.Background(), dbURL)
+	if err != nil {
+		return nil, err
+	}
+	return &DB{pool: pool}, nil
+}
+
+func (db *DB) Close() {
+	db.pool.Close()
+}
+
 func (db *DB) GetTodayAttendance(ctx context.Context) ([]model.Attendance, error) {
 	today := time.Now().Format("2006-01-02")
 
