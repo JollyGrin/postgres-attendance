@@ -2,9 +2,12 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/jackc/pgx/v5"
+	"errors"
 	"log"
 	"net/http"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/lib/pq"
 )
 
 type Response struct {
@@ -35,6 +38,12 @@ func SendResponse(w http.ResponseWriter, success bool, data interface{}, errorMs
 func HandleDBError(err error) (string, string, int) {
 	var errorMsg, details string
 	var statusCode int
+
+	var pqErr *pq.Error
+	if errors.As(err, &pqErr) {
+		if pqErr.Code.Name() == "unique_violation" {
+		}
+	}
 
 	switch {
 	case err == pgx.ErrNoRows:

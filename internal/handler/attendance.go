@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/JollyGrin/postgres-attendance/internal/api"
@@ -25,7 +26,7 @@ func (h *AttendanceHandler) GetTodayAttendance(w http.ResponseWriter, r *http.Re
 	// Get records from database
 	records, err := h.db.GetTodayAttendance(r.Context())
 	if err != nil {
-		errorMsg, details, statusCode := api.HandleDBError(err)
+		errorMsg, details, statusCode := api.HandleDBError(fmt.Errorf("get attendance: %w", err))
 		api.SendResponse(w, false, nil, errorMsg, details, statusCode)
 		return
 	}
