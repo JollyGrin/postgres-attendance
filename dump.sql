@@ -24,8 +24,19 @@ ALTER TABLE attendance
 ADD COLUMN verse VARCHAR(10) CHECK (verse IN ('dcl', 'hyperfy', 'irl'));
 
 -- Migration #6
+BEGIN;
 ALTER TABLE attendance
 RENAME COLUMN verse TO metaverse;
 
 ALTER TABLE attendance
 RENAME COLUMN public_key TO address;
+END;
+
+-- Migration #7
+BEGIN;
+ALTER TABLE attendance
+RENAME COLUMN id TO uuid;
+
+ALTER TABLE attendance
+ADD COLUMN id int;
+COMMIT;

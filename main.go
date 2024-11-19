@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/JollyGrin/postgres-attendance/internal/db"
-	"github.com/JollyGrin/postgres-attendance/internal/handler"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/JollyGrin/postgres-attendance/internal/db"
+	"github.com/JollyGrin/postgres-attendance/internal/handler"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 )
 
 // Attendance represents the structure of our attendance record
@@ -60,7 +61,6 @@ func main() {
 
 	// Define routes
 	http.HandleFunc("/api/attendance/today", attendanceHandler.GetTodayAttendance)
-	// http.HandleFunc("/api/attendance", handler.createAttendance)
 
 	// Start server
 	fmt.Println("Server starting on :8080...")
