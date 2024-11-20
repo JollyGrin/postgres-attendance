@@ -61,6 +61,8 @@ func main() {
 
 	// Define routes
 	http.HandleFunc("/api/attendance/today", attendanceHandler.GetTodayAttendance)
+	http.HandleFunc("/api/attendance/by", attendanceHandler.GetAttendanceByAddress)
+	http.HandleFunc("/api/attendance/date", attendanceHandler.GetUniqueAddressesByDay)
 
 	// Start server
 	fmt.Println("Server starting on :8080...")

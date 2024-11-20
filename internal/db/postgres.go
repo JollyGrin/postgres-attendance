@@ -54,7 +54,7 @@ func (db *DB) GetTodayAttendance(ctx context.Context) ([]model.Attendance, error
 
 func (db *DB) GetRecordsByAddress(ctx context.Context, address string) ([]model.Attendance, error) {
 	rows, err := db.pool.Query(ctx,
-		"SELECT id, address, created_at FROM attendance WHERE address = $1",
+		"SELECT id, address, created_at FROM attendance WHERE address ILIKE $1",
 		address)
 	if err != nil {
 		return nil, err
@@ -73,4 +73,28 @@ func (db *DB) GetRecordsByAddress(ctx context.Context, address string) ([]model.
 		return nil, err
 	}
 	return records, nil
+}
+
+func (db *DB) GetUniqueAddressesByDay(ctx context.Context, date string) (int, []string, error) {
+	rows, err := db.pool.Query(ctx,
+		`SELECT COUNT(DISTINCT address) as unique_address_count, 
+			ARRAY_AGG(DISTINCT address) as unique_addresses 
+		 FROM attendance 
+		 WHERE DATE(created_at) = $1`,
+		date)
+	if err != nil {
+		return 0, nil, err
+	}
+	defer rows.Close()
+
+	var uniqueCount int
+	var uniqueAddresses []string
+
+	if rows.Next() {
+		if err := rows.Scan(&uniqueCount, &uniqueAddresses); err != nil {
+			return 0, nil, err
+		}
+	}
+
+	return uniqueCount, uniqueAddresses, nil
 }
