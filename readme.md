@@ -1,7 +1,6 @@
 
 ### Database Steps
 
-`brew services start postgresql@14`
 
 `docker-compose up -d`
 
@@ -16,7 +15,7 @@ docker-compose up -d
 ```
 
 ### check db and roles
-`docker exec -it postgres_container psql -U postgres -d attendance`
+`docker exec -i postgres_container psql -U postgres -d attendance`
 
 check roles
 `\du`
