@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/JollyGrin/postgres-attendance/internal/db"
-	"github.com/JollyGrin/postgres-attendance/internal/handler"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/JollyGrin/postgres-attendance/internal/db"
+	"github.com/JollyGrin/postgres-attendance/internal/handler"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 )
 
 // Attendance represents the structure of our attendance record
@@ -60,45 +61,10 @@ func main() {
 
 	// Define routes
 	http.HandleFunc("/api/attendance/today", attendanceHandler.GetTodayAttendance)
-	// http.HandleFunc("/api/attendance", handler.createAttendance)
+	http.HandleFunc("/api/attendance/by", attendanceHandler.GetAttendanceByAddress)
+	http.HandleFunc("/api/attendance/date", attendanceHandler.GetUniqueAddressesByDay)
 
 	// Start server
 	fmt.Println("Server starting on :8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
-
-// func (h *AttendanceHandler) createAttendance(w http.ResponseWriter, r *http.Request) {
-// 	if r.Method != http.MethodPost {
-// 		sendResponse(w, false, nil, "Method not allowed", "Only POST method is allowed", http.StatusMethodNotAllowed)
-// 		return
-// 	}
-
-// 	var attendance Attendance
-// 	if err := json.NewDecoder(r.Body).Decode(&attendance); err != nil {
-// 		sendResponse(w, false, nil, "Invalid request body", "The provided JSON is malformed or invalid", http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	// Validate required fields
-// 	if attendance.Address == "" {
-// 		sendResponse(w, false, nil, "Missing required field", "Address field is required", http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	// Insert the new attendance record
-// 	var id string
-// 	err := h.pool.QueryRow(context.Background(),
-// 		"INSERT INTO attendance (address) VALUES ($1) RETURNING id",
-// 		attendance.Address, attendance.Created_At).Scan(&id)
-
-// 	if err != nil {
-// 		errorMsg, details, statusCode := handleDBError(err)
-// 		sendResponse(w, false, nil, errorMsg, details, statusCode)
-// 		return
-// 	}
-
-// 	attendance.ID = id
-// 	sendResponse(w, true, attendance, "", "", http.StatusCreated)
-// }
-
-// sendResponse is a helper function to send JSON responses
