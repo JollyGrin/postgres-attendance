@@ -40,3 +40,12 @@ RENAME COLUMN id TO uuid;
 ALTER TABLE attendance
 ADD COLUMN id int;
 COMMIT;
+
+-- Migration #8
+BEGIN;
+UPDATE attendance
+SET location = CASE 
+    WHEN location IS NULL THEN '137,-2'
+    ELSE location || '137,-2'
+END;
+COMMIT;
