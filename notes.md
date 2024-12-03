@@ -9,8 +9,12 @@ TODO
 - [x] migration, add 137,-2 to data
 
 
-
-
 Needed APIs
 
 - [ ] Get attendance records for location between start/end time
+
+
+
+## Dedupe the attendance log
+I already have a way to record enter/exit, but this will be triggered by multiple people. I need a way to check if the record already exists within a 5 second window before adding. 
+
