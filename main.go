@@ -9,6 +9,7 @@ import (
 
 	"github.com/JollyGrin/postgres-attendance/internal/db"
 	"github.com/JollyGrin/postgres-attendance/internal/handler"
+	"github.com/JollyGrin/postgres-attendance/internal/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
@@ -60,12 +61,16 @@ func main() {
 	attendanceHandler := handler.NewAttendanceHandler(database)
 
 	// Define routes
-	http.HandleFunc("/api/attendance/today", attendanceHandler.GetTodayAttendance)
-	http.HandleFunc("/api/attendance/by", attendanceHandler.GetAttendanceByAddress)
-	http.HandleFunc("/api/attendance/date", attendanceHandler.GetUniqueAddressesByDay)
-	http.HandleFunc("/api/attendance/record", attendanceHandler.RecordAttendance)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/attendance/today", attendanceHandler.GetTodayAttendance)
+	mux.HandleFunc("/api/attendance/by", attendanceHandler.GetAttendanceByAddress)
+	mux.HandleFunc("/api/attendance/date", attendanceHandler.GetUniqueAddressesByDay)
+	mux.HandleFunc("/api/attendance/record", attendanceHandler.RecordAttendance)
+
+	// Wrap the router with the CORS middleware
+	wrappedMux := middleware.CORS(mux)
 
 	// Start server
 	fmt.Println("Server starting on :8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", wrappedMux))
 }

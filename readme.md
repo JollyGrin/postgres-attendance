@@ -16,6 +16,10 @@ docker-compose up -d
 
 ### check db and roles
 `docker exec -i postgres_container psql -U postgres -d attendance`
+`-it`: Starts an interactive terminal session.
+`psql`: The PostgreSQL CLI tool.
+`-U postgres`: Logs in as the postgres user.
+`-d attendance`: Connects to the attendance database.
 
 check roles
 `\du`
@@ -49,3 +53,17 @@ GRANT
 │       └── response.go   # Response helpers
 └── config/
     └── config.go         # Configuration handling
+
+## Run basic queries
+
+```
+docker ps // check if docker running container
+
+docker exec -it postgres_container psql -U postgres -d attendance
+
+
+attendance#: SELECT * FROM attendance
+ORDER BY created_at DESC
+LIMIT 10;
+
+```
