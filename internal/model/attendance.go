@@ -14,13 +14,21 @@ const (
 	MetaverseIRL     MetaverseType = "irl"
 )
 
+type EntranceStatusType string
+
+const (
+	EntranceEnter EntranceStatusType = "ENTER"
+	EntranceExit  EntranceStatusType = "EXIT"
+)
+
 // Attendance represents the structure of our attendance record
 type Attendance struct {
-	ID         string        `json:"id"`
-	Address    string        `json:"address"`
-	Created_At time.Time     `json:"created_at"`
-	Metaverse  MetaverseType `json:"metaverse"`
-	Location   string        `json:"location"`
+	ID             string             `json:"id"`
+	Address        string             `json:"address"`
+	Created_At     time.Time          `json:"created_at"`
+	Metaverse      MetaverseType      `json:"metaverse"`
+	Location       string             `json:"location"`
+	EntranceStatus EntranceStatusType `json:"entrance_status"`
 }
 
 // Validate checks if the Metaverse field has a valid value

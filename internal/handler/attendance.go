@@ -3,9 +3,11 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/JollyGrin/postgres-attendance/internal/api"
 	"github.com/JollyGrin/postgres-attendance/internal/db"
-	"net/http"
+	"github.com/JollyGrin/postgres-attendance/internal/model"
 )
 
 type AttendanceHandler struct {
@@ -103,9 +105,10 @@ func (h *AttendanceHandler) RecordAttendance(w http.ResponseWriter, r *http.Requ
 	}
 
 	var req struct {
-		Address   string `json:"address"`
-		Location  string `json:"location"`
-		Metaverse string `json:"metaverse"`
+		Address        string `json:"address"`
+		Location       string `json:"location"`
+		Metaverse      string `json:"metaverse"`
+		EntranceStatus string `json:"entrance_status"`
 	}
 
 	// Decode the request body
@@ -125,8 +128,13 @@ func (h *AttendanceHandler) RecordAttendance(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	if req.EntranceStatus != "ENTER" && req.EntranceStatus != "EXIT" {
+		api.SendResponse(w, false, nil, "Bad Request", "entrance_status must be 'ENTER' or 'EXIT'", http.StatusBadRequest)
+		return
+	}
+
 	// Record the attendance
-	err := h.db.RecordAttendance(r.Context(), req.Address)
+	err := h.db.RecordAttendance(r.Context(), req.Address, req.Location, model.MetaverseType(req.Metaverse), model.EntranceStatusType(req.EntranceStatus))
 	if err != nil {
 		errorMsg, details, statusCode := api.HandleDBError(fmt.Errorf("record attendance: %w", err))
 		api.SendResponse(w, false, nil, errorMsg, details, statusCode)

@@ -49,3 +49,11 @@ SET location = CASE
     ELSE location || '137,-2'
 END;
 COMMIT;
+ 
+-- Migration #9
+BEGIN;
+ALTER TABLE attendance
+ADD COLUMN entrance_status VARCHAR(5) CHECK (entrance_status IN ('ENTER', 'EXIT')) DEFAULT 'ENTER';
+
+COMMENT ON COLUMN attendance.entrance_status IS 'Status indicating whether the person entered or exited.';
+COMMIT;
