@@ -105,10 +105,10 @@ func (h *AttendanceHandler) RecordAttendance(w http.ResponseWriter, r *http.Requ
 	}
 
 	var req struct {
-		Address        string `json:"address"`
-		Location       string `json:"location"`
-		Metaverse      string `json:"metaverse"`
-		EntranceStatus string `json:"entrance_status"`
+		Address        string                   `json:"address"`
+		Location       string                   `json:"location"`
+		Metaverse      model.MetaverseType      `json:"metaverse"`
+		EntranceStatus model.EntranceStatusType `json:"entrance_status"`
 	}
 
 	// Decode the request body
@@ -134,13 +134,17 @@ func (h *AttendanceHandler) RecordAttendance(w http.ResponseWriter, r *http.Requ
 	}
 
 	// Record the attendance
-	err := h.db.RecordAttendance(r.Context(), req.Address, req.Location, model.MetaverseType(req.Metaverse), model.EntranceStatusType(req.EntranceStatus))
+	inserted, err := h.db.RecordAttendance(r.Context(), req.Address, req.Location, model.MetaverseType(req.Metaverse), model.EntranceStatusType(req.EntranceStatus))
 	if err != nil {
 		errorMsg, details, statusCode := api.HandleDBError(fmt.Errorf("record attendance: %w", err))
 		api.SendResponse(w, false, nil, errorMsg, details, statusCode)
 		return
 	}
 
-	// Successful response
-	api.SendResponse(w, true, nil, "", "Attendance recorded successfully", http.StatusCreated)
+	// Response based on insertion status
+	if inserted {
+		api.SendResponse(w, true, nil, "", "Attendance recorded successfully", http.StatusCreated)
+	} else {
+		api.SendResponse(w, true, nil, "", "Duplicate record: attendance was already recorded recently", http.StatusOK)
+	}
 }

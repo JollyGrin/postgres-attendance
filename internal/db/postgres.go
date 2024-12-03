@@ -6,6 +6,8 @@ import (
 	"github.com/JollyGrin/postgres-attendance/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 type DB struct {
@@ -109,9 +111,17 @@ func (db *DB) GetUniqueAddressesByDay(ctx context.Context, date string) (int, []
 // 	return nil
 // }
 
-func (db *DB) RecordAttendance(ctx context.Context, address string, location string, metaverse model.MetaverseType, entranceStatus model.EntranceStatusType) error {
+func (db *DB) RecordAttendance(ctx context.Context, address string, location string, metaverse model.MetaverseType, entranceStatus model.EntranceStatusType) (bool, error) {
+	// Log the values being recorded
+	logrus.WithFields(logrus.Fields{
+		"address $1":        address,
+		"location $2":       location,
+		"metaverse $3":      metaverse,
+		"entranceStatus $4": entranceStatus,
+	}).Info("Attempting to record attendance")
+
 	// Use a query to insert the record only if a similar one does not exist within the last 5 seconds
-	_, err := db.pool.Exec(ctx,
+	commandTag, err := db.pool.Exec(ctx,
 		`INSERT INTO attendance (address, created_at, location, metaverse, entrance_status)
 		SELECT $1, NOW(), $2, $3, $4
 		WHERE NOT EXISTS (
@@ -119,13 +129,19 @@ func (db *DB) RecordAttendance(ctx context.Context, address string, location str
 			FROM attendance
 			WHERE address = $1
 			  AND location = $2
-			  AND entrance_status = $4
+        AND metaverse = $3::VARCHAR
+        AND entrance_status = $4::VARCHAR
 			  AND created_at > NOW() - INTERVAL '5 seconds'
 		)`,
 		address, location, metaverse, entranceStatus)
+
 	if err != nil {
-		return fmt.Errorf("failed to record attendance: %w", err)
+		return false, fmt.Errorf("failed to record attendance: %w", err)
 	}
 
-	return nil
+	// Check if a row was inserted
+	// Determine if the record was inserted
+	return commandTag.RowsAffected() > 0, nil
+
+	// return nil
 }

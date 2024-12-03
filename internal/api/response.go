@@ -38,8 +38,8 @@ func SendResponse(w http.ResponseWriter, success bool, data interface{}, errorMs
 }
 
 func HandleDBError(err error) (string, string, int) {
-	var errorMsg, details string
-	var statusCode int
+	// var errorMsg, details string
+	// var statusCode int
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return "Record not found", err.Error(), http.StatusNotFound
@@ -57,30 +57,4 @@ func HandleDBError(err error) (string, string, int) {
 	}
 	return fmt.Sprintf("Database error %q", pqErr.Code.Name()), err.Error(), http.StatusBadRequest
 
-	// switch {
-	// case err == pgx.ErrNoRows:
-	// 	errorMsg = "No records found"
-	// 	details = "The query returned no results"
-	// 	statusCode = http.StatusNotFound
-	// case err.Error() == "ERROR: duplicate key value violates unique constraint" ||
-	// 	err.Error() == "ERROR: unique_violation":
-	// 	errorMsg = "Duplicate record"
-	// 	details = "A record with this key already exists"
-	// 	statusCode = http.StatusConflict
-	// case err.Error() == "ERROR: foreign key violation" ||
-	// 	err.Error() == "ERROR: foreign_key_violation":
-	// 	errorMsg = "Invalid reference"
-	// 	details = "The record references a non-existent related record"
-	// 	statusCode = http.StatusBadRequest
-	// case err.Error() == "ERROR: null value in column violates not-null constraint":
-	// 	errorMsg = "Missing required field"
-	// 	details = "A required field was not provided"
-	// 	statusCode = http.StatusBadRequest
-	// default:
-	// 	errorMsg = "Database error occurred"
-	// 	details = err.Error()
-	// 	statusCode = http.StatusInternalServerError
-	// }
-
-	return errorMsg, details, statusCode
 }

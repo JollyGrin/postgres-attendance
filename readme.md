@@ -68,3 +68,10 @@ ORDER BY created_at DESC
 LIMIT 10;
 
 ```
+
+```
+SELECT created_at, address, entrance_status
+FROM attendance
+ORDER BY created_at DESC
+LIMIT 10;
+```
