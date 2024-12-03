@@ -6,7 +6,7 @@ DCL Attendance Idea:
 
 TODO 
 - [ ]  api request to dcl events, and populate events table
-- [ ] migration, add 137,-2 to data
+- [x] migration, add 137,-2 to data
 
 
 

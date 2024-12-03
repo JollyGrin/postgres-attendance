@@ -1,0 +1,17 @@
+meta {
+  name: RecordAttendance
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/attendance/record
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "address":"0xFooBar"
+  }
+}

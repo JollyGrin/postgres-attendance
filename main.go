@@ -63,6 +63,7 @@ func main() {
 	http.HandleFunc("/api/attendance/today", attendanceHandler.GetTodayAttendance)
 	http.HandleFunc("/api/attendance/by", attendanceHandler.GetAttendanceByAddress)
 	http.HandleFunc("/api/attendance/date", attendanceHandler.GetUniqueAddressesByDay)
+	http.HandleFunc("/api/attendance/record", attendanceHandler.RecordAttendance)
 
 	// Start server
 	fmt.Println("Server starting on :8080...")

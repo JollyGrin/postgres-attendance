@@ -2,10 +2,10 @@ package db
 
 import (
 	"context"
-	"time"
-
+	"fmt"
 	"github.com/JollyGrin/postgres-attendance/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"time"
 )
 
 type DB struct {
@@ -97,4 +97,14 @@ func (db *DB) GetUniqueAddressesByDay(ctx context.Context, date string) (int, []
 	}
 
 	return uniqueCount, uniqueAddresses, nil
+}
+
+func (db *DB) RecordAttendance(ctx context.Context, address string) error {
+	_, err := db.pool.Exec(ctx,
+		"INSERT INTO attendance (address, created_at) VALUES ($1, NOW())",
+		address)
+	if err != nil {
+		return fmt.Errorf("failed to record attendance: %w", err)
+	}
+	return nil
 }
