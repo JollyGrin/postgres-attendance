@@ -62,7 +62,8 @@ docker ps // check if docker running container
 docker exec -it postgres_container psql -U postgres -d attendance
 
 
-attendance#: SELECT * FROM attendance
+attendance#: 
+SELECT * FROM attendance
 ORDER BY created_at DESC
 LIMIT 10;
 
