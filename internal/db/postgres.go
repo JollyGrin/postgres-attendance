@@ -101,6 +101,8 @@ func (db *DB) GetUniqueAddressesByDay(ctx context.Context, date string) (int, []
 	return uniqueCount, uniqueAddresses, nil
 }
 
+// NOTE:  old insert, now has duplication check
+// @deprecated
 // func (db *DB) RecordAttendance(ctx context.Context, address string, location string, metaverse model.MetaverseType, entranceStatus model.EntranceStatusType) error {
 // 	_, err := db.pool.Exec(ctx,
 // 		"INSERT INTO attendance (address, created_at, location, metaverse, entrance_status) VALUES ($1, NOW(), $2, $3, $4)",
@@ -142,6 +144,4 @@ func (db *DB) RecordAttendance(ctx context.Context, address string, location str
 	// Check if a row was inserted
 	// Determine if the record was inserted
 	return commandTag.RowsAffected() > 0, nil
-
-	// return nil
 }
