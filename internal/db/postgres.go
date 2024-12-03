@@ -99,12 +99,33 @@ func (db *DB) GetUniqueAddressesByDay(ctx context.Context, date string) (int, []
 	return uniqueCount, uniqueAddresses, nil
 }
 
+// func (db *DB) RecordAttendance(ctx context.Context, address string, location string, metaverse model.MetaverseType, entranceStatus model.EntranceStatusType) error {
+// 	_, err := db.pool.Exec(ctx,
+// 		"INSERT INTO attendance (address, created_at, location, metaverse, entrance_status) VALUES ($1, NOW(), $2, $3, $4)",
+// 		address, location, metaverse, entranceStatus)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to record attendance: %w", err)
+// 	}
+// 	return nil
+// }
+
 func (db *DB) RecordAttendance(ctx context.Context, address string, location string, metaverse model.MetaverseType, entranceStatus model.EntranceStatusType) error {
+	// Use a query to insert the record only if a similar one does not exist within the last 5 seconds
 	_, err := db.pool.Exec(ctx,
-		"INSERT INTO attendance (address, created_at, location, metaverse, entrance_status) VALUES ($1, NOW(), $2, $3, $4)",
+		`INSERT INTO attendance (address, created_at, location, metaverse, entrance_status)
+		SELECT $1, NOW(), $2, $3, $4
+		WHERE NOT EXISTS (
+			SELECT 1
+			FROM attendance
+			WHERE address = $1
+			  AND location = $2
+			  AND entrance_status = $4
+			  AND created_at > NOW() - INTERVAL '5 seconds'
+		)`,
 		address, location, metaverse, entranceStatus)
 	if err != nil {
 		return fmt.Errorf("failed to record attendance: %w", err)
 	}
+
 	return nil
 }
