@@ -98,6 +98,33 @@ func (h *AttendanceHandler) GetUniqueAddressesByDay(w http.ResponseWriter, r *ht
 	api.SendResponse(w, true, uniqueAddresses, "", "", http.StatusOK)
 }
 
+func (h *AttendanceHandler) GetUserDurationsByDay(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		api.SendResponse(w, false, nil, "Method not allowed", "Only GET method is allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	day := r.URL.Query().Get("day")
+	if day == "" {
+		api.SendResponse(w, false, nil, "Bad Request", "Day parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	durations, err := h.db.GetUserDurationsByDay(r.Context(), day)
+	if err != nil {
+		errorMsg, details, statusCode := api.HandleDBError(fmt.Errorf("get user durations by day: %w", err))
+		api.SendResponse(w, false, nil, errorMsg, details, statusCode)
+		return
+	}
+
+	if len(durations) == 0 {
+		api.SendResponse(w, true, durations, "", "No user duration records found for day", http.StatusOK)
+		return
+	}
+
+	api.SendResponse(w, true, durations, "", "", http.StatusOK)
+}
+
 func (h *AttendanceHandler) RecordAttendance(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		api.SendResponse(w, false, nil, "Method not allowed", "Only POST method is allowed", http.StatusMethodNotAllowed)

@@ -66,6 +66,7 @@ func main() {
 	mux.HandleFunc("/api/attendance/by", attendanceHandler.GetAttendanceByAddress)
 	mux.HandleFunc("/api/attendance/date", attendanceHandler.GetUniqueAddressesByDay)
 	mux.HandleFunc("/api/attendance/record", attendanceHandler.RecordAttendance)
+	mux.HandleFunc("/api/attendance/duration", attendanceHandler.GetUserDurationsByDay)
 
 	// Wrap the router with the CORS middleware
 	wrappedMux := middleware.CORS(mux)

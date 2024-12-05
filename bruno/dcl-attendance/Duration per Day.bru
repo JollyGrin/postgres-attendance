@@ -1,0 +1,15 @@
+meta {
+  name: Duration per Day
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/attendance/duration?day=2024-12-03
+  body: none
+  auth: none
+}
+
+params:query {
+  day: 2024-12-03
+}

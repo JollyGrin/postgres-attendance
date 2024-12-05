@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"github.com/JollyGrin/postgres-attendance/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"time"
-
 	"github.com/sirupsen/logrus"
+	"time"
 )
 
 type DB struct {
@@ -144,4 +143,54 @@ func (db *DB) RecordAttendance(ctx context.Context, address string, location str
 	// Check if a row was inserted
 	// Determine if the record was inserted
 	return commandTag.RowsAffected() > 0, nil
+}
+
+type UserDuration struct {
+	Address   string        `json:"address"`
+	EnterTime time.Time     `json:"enter_time"`
+	ExitTime  time.Time     `json:"exit_time"`
+	Duration  time.Duration `json:"duration"`
+}
+
+func (db *DB) GetUserDurationsByDay(ctx context.Context, date string) ([]UserDuration, error) {
+	// Query to get all enter/exit events for the day
+	rows, err := db.pool.Query(ctx,
+		`WITH events AS (
+            SELECT address, created_at, entrance_status,
+                   ROW_NUMBER() OVER (PARTITION BY address ORDER BY created_at) as rn
+            FROM attendance
+            WHERE DATE(created_at) = $1
+        ),
+        paired_events AS (
+            SELECT 
+                e1.address, 
+                e1.created_at AS enter_time, 
+                COALESCE(e2.created_at, e1.created_at + INTERVAL '10 minutes') AS exit_time
+            FROM events e1
+            LEFT JOIN events e2 ON e1.address = e2.address AND e1.rn = e2.rn - 1 AND e2.entrance_status = 'EXIT'
+            WHERE e1.entrance_status = 'ENTER'
+        )
+        SELECT address, enter_time, exit_time, exit_time - enter_time AS duration
+        FROM paired_events`,
+		date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var userDurations []UserDuration
+
+	for rows.Next() {
+		var ud UserDuration
+		if err := rows.Scan(&ud.Address, &ud.EnterTime, &ud.ExitTime, &ud.Duration); err != nil {
+			return nil, err
+		}
+		userDurations = append(userDurations, ud)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return userDurations, nil
 }
