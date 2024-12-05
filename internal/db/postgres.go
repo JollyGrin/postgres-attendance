@@ -146,10 +146,10 @@ func (db *DB) RecordAttendance(ctx context.Context, address string, location str
 }
 
 type UserDuration struct {
-	Address   string        `json:"address"`
-	EnterTime time.Time     `json:"enter_time"`
-	ExitTime  time.Time     `json:"exit_time"`
-	Duration  time.Duration `json:"duration"`
+	Address   string    `json:"address"`
+	EnterTime time.Time `json:"enter_time"`
+	ExitTime  time.Time `json:"exit_time"`
+	Duration  float64   `json:"duration"`
 }
 
 func (db *DB) GetUserDurationsByDay(ctx context.Context, date string) ([]UserDuration, error) {
@@ -182,9 +182,11 @@ func (db *DB) GetUserDurationsByDay(ctx context.Context, date string) ([]UserDur
 
 	for rows.Next() {
 		var ud UserDuration
-		if err := rows.Scan(&ud.Address, &ud.EnterTime, &ud.ExitTime, &ud.Duration); err != nil {
+		var duration time.Duration // New variable to hold the duration from the database
+		if err := rows.Scan(&ud.Address, &ud.EnterTime, &ud.ExitTime, &duration); err != nil {
 			return nil, err
 		}
+		ud.Duration = duration.Seconds() // Convert to seconds before appending
 		userDurations = append(userDurations, ud)
 	}
 
