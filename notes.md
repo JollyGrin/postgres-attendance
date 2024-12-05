@@ -9,6 +9,10 @@ TODO
 - [x] migration, add 137,-2 to data
 
 
+# DB updates
+the duration call is working to give durations, yet i need to combine timeslots if multiple enters are available with overlapping times. Right now i get multiple 10 minutes if no exit was found, but within 10 mins of each other.
+
+
 Needed APIs
 
 - [ ] Get attendance records for location between start/end time
