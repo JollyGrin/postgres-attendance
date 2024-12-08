@@ -72,6 +72,13 @@ const RecordList = () => {
 
   return (
     <>
+      <div className="grid grid-cols-[8rem_1fr] items-center">
+        <div />
+        <div className="flex justify-between">
+          <p>{firstStart?.enter_time.split("T")?.[1]?.split(".")?.[0]}</p>
+          <p>{lastEnd?.exit_time.split("T")?.[1]?.split(".")?.[0]}</p>
+        </div>
+      </div>
       {attendees
         // ?.splice(4, 1)
         ?.map((record) => (
