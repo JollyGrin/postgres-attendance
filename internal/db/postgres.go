@@ -6,6 +6,7 @@ import (
 	"github.com/JollyGrin/postgres-attendance/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sirupsen/logrus"
+	"sort"
 	"time"
 )
 
@@ -145,6 +146,53 @@ func (db *DB) RecordAttendance(ctx context.Context, address string, location str
 	return commandTag.RowsAffected() > 0, nil
 }
 
+// DURATION
+func mergeOverlappingDurations(userDurations []UserDuration) []UserDuration {
+	// If the list is empty, return empty
+	if len(userDurations) == 0 {
+		return []UserDuration{}
+	}
+
+	// Sort the durations by address and enter time
+	sort.Slice(userDurations, func(i, j int) bool {
+		if userDurations[i].Address == userDurations[j].Address {
+			return userDurations[i].EnterTime.Before(userDurations[j].EnterTime)
+		}
+		return userDurations[i].Address < userDurations[j].Address
+	})
+
+	var mergedDurations []UserDuration
+	currentGroup := userDurations[0]
+
+	for i := 1; i < len(userDurations); i++ {
+		// If the current entry is for a different address, add previous group and start a new one
+		if userDurations[i].Address != currentGroup.Address {
+			mergedDurations = append(mergedDurations, currentGroup)
+			currentGroup = userDurations[i]
+			continue
+		}
+
+		// Check for overlap
+		if userDurations[i].EnterTime.Before(currentGroup.ExitTime) ||
+			userDurations[i].EnterTime.Equal(currentGroup.ExitTime) {
+			// Merge the entries
+			if userDurations[i].ExitTime.After(currentGroup.ExitTime) {
+				currentGroup.ExitTime = userDurations[i].ExitTime
+				currentGroup.Duration = currentGroup.ExitTime.Sub(currentGroup.EnterTime).Seconds()
+			}
+		} else {
+			// No overlap, add previous group and start a new one
+			mergedDurations = append(mergedDurations, currentGroup)
+			currentGroup = userDurations[i]
+		}
+	}
+
+	// Add the last group
+	mergedDurations = append(mergedDurations, currentGroup)
+
+	return mergedDurations
+}
+
 type UserDuration struct {
 	Address   string    `json:"address"`
 	EnterTime time.Time `json:"enter_time"`
@@ -165,7 +213,7 @@ func (db *DB) GetUserDurationsByDay(ctx context.Context, date string) ([]UserDur
             SELECT 
                 e1.address, 
                 e1.created_at AS enter_time, 
-                COALESCE(e2.created_at, e1.created_at + INTERVAL '10 minutes') AS exit_time
+                COALESCE(e2.created_at, e1.created_at + INTERVAL '1 minutes') AS exit_time
             FROM events e1
             LEFT JOIN events e2 ON e1.address = e2.address AND e1.rn = e2.rn - 1 AND e2.entrance_status = 'EXIT'
             WHERE e1.entrance_status = 'ENTER'
@@ -194,5 +242,5 @@ func (db *DB) GetUserDurationsByDay(ctx context.Context, date string) ([]UserDur
 		return nil, err
 	}
 
-	return userDurations, nil
+	return mergeOverlappingDurations(userDurations), nil
 }
