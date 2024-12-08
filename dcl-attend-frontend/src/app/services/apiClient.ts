@@ -1,8 +1,17 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 const baseUrl = "http://localhost:8080";
 
+export type AttendRecord = {
+  address: string;
+  enter_time: string;
+  exit_time: string;
+  duration: number;
+};
+
 export async function getDayDuration(day: string) {
-  const res = await axios.get(`${baseUrl}/api/attendance/duration?day=${day}`);
-  return res.data;
+  const res = await axios.get<AxiosResponse<AttendRecord[]>>(
+    `${baseUrl}/api/attendance/duration?day=${day}`,
+  );
+  return res.data.data;
 }
