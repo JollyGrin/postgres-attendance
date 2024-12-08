@@ -14,6 +14,9 @@ docker-compose down
 docker-compose up -d
 ```
 
+### init fresh db from dump.sql
+`cat dump.sql | docker exec -i some-postgres psql -U postgres -d postgres`
+
 ### check db and roles
 `docker exec -i postgres_container psql -U postgres -d attendance`
 `-it`: Starts an interactive terminal session.
