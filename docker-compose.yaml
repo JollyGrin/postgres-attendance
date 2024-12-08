@@ -11,5 +11,23 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  # New service for your Go server
+  go_server:
+    build:
+      context: . # Assuming your Dockerfile is in the same directory as docker-compose.yml
+      dockerfile: Dockerfile # Name of your Dockerfile, change if different
+    container_name: go_server_container
+    ports:
+      - "8080:8080" # Map the port your Go server listens on
+    depends_on:
+      - db # Ensures that the db service is started before go_server
+    environment:
+      DB_HOST: db # The name of the db service in Docker Compose network
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: attendance
+
 volumes:
   postgres_data:
