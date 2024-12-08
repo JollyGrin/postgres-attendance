@@ -98,14 +98,6 @@ const Record = (record: {
   if (!record.first || !record.last || !record?.totalDuration) return null;
   const { data } = useDclPlayer(record.address);
   const [avatar] = data?.avatars ?? [];
-  const pfp = avatar?.avatar.snapshots.face256;
-
-  const duration = record.durations[0];
-
-  const percentageWidth = duration.duration / record.totalDuration;
-  const startDifference =
-    new Date(duration.enter_time).getTime() - record.first;
-  const percentageLeft = startDifference / 1000 / record.totalDuration;
 
   function findLeft(enterTime: string) {
     if (!enterTime || !record.first || !record.totalDuration) return 0;
@@ -130,17 +122,18 @@ const Record = (record: {
         key="pfp"
         style={{
           background: "black",
-          minWidth: "2rem",
-          minHeight: "2rem",
+          width: "2.5rem",
+          height: "2.5rem",
           borderRadius: "100%",
           margin: "0.25rem",
         }}
       />
 
       <p>{record.address.substring(0, 6)}...</p>
-      <div className="bg-green-50 min-h-5 w-full relative">
+      <div className="bg-green-50 min-h-5 w-full relative rounded-xl">
         {record?.durations?.map((dur) => (
           <ChartLine
+            key={dur.address + dur.enter_time}
             width={dur.duration / (record?.totalDuration ?? 1)}
             left={findLeft(dur?.enter_time)}
           />
