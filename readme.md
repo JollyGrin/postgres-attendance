@@ -11,8 +11,11 @@ check if there
 ### restart
 ```
 docker-compose down
-docker-compose up -d
+docker-compose up --build -d
 ```
+### nginx
+after updating an nginx config
+`docker-compose up -d --force-recreate nginx`
 
 ### init fresh db from dump.sql
 `cat dump.sql | docker exec -i some-postgres psql -U postgres -d postgres`

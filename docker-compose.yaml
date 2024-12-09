@@ -12,11 +12,10 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # New service for your Go server
   go_server:
     build:
-      context: . # Assuming your Dockerfile is in the same directory as docker-compose.yml
-      dockerfile: Dockerfile # Name of your Dockerfile, change if different
+      context: .
+      dockerfile: Dockerfile
     container_name: go_server_container
     ports:
       - "8080:8080" # Map the port your Go server listens on
@@ -28,6 +27,18 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       DB_NAME: attendance
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_container
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro # Mounting Let's Encrypt certificates
+    depends_on:
+      - go_server
 
 volumes:
   postgres_data:

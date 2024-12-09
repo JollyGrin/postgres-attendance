@@ -7,6 +7,7 @@ DCL Attendance Idea:
 TODO 
 - [ ]  api request to dcl events, and populate events table
 - [x] migration, add 137,-2 to data
+- [ ] improve docs how to instantiate fresh install with the `dump.sql`
 
 
 # DB updates
