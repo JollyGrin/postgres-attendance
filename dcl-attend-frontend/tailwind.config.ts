@@ -11,7 +11,13 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        border: "var(--color-border)",
       },
+    },
+  },
+  variants: {
+    extend: {
+      gridTemplateColumns: ["group-hover"],
     },
   },
   plugins: [],
