@@ -38,6 +38,7 @@ jobs:
         with:
           node-version: "20"
           cache: pnpm
+          cache-dependency-path: dcl-attend-frontend/pnpm-lock.yaml
 
       - name: Install Dependencies
         run: |
