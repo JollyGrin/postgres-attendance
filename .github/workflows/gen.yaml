@@ -1,0 +1,26 @@
+# Ensure all generated files are up-to-date
+name: GenerateFiles
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  make-gen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.23.0
+      - name: Run make gen
+        run: make gen
+      - name: Check for unstaged files
+        run: ./scripts/check_unstaged.sh
