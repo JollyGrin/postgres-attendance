@@ -1,35 +1,25 @@
 "use client";
 
-import { IconChevDown } from "@/components/atoms/icons";
-import { useState } from "react";
+import Layout from "@/components/molecules/Layout";
+import Link from "next/link";
 
 export default function Home() {
-  const [isHovering, setIsHovering] = useState(false);
-  const over = () => setIsHovering(true);
-  const out = () => setIsHovering(false);
-
-  return (
-    <div
-      className={`grid w-svh h-svh transition-all`}
-      style={{
-        gridTemplateColumns: `${isHovering ? 8 : 5}rem 1fr`,
-      }}
-    >
-      <div
-        onMouseOver={over}
-        onMouseOut={out}
-        className="border-border border-r-2 group-hover:[grid-template-columns:8rem_1fr] flex flex-col items-center"
-      >
-        <div className="w-[40px] h-[40px] bg-border rounded-full mt-4" />
-      </div>
-      <div className="flex flex-col">
-        <div className="border-border border-b-2 min-h-16 px-4 flex items-center gap-3 font-mono">
-          <span>org</span>
-          <span className="text-border font-bold">/</span>
-          <span>innkeeper</span>
-          <IconChevDown color="var(--color-border)" />
-        </div>
-      </div>
-    </div>
-  );
+  return <Layout top={<Top />} body={<Body />} />;
 }
+
+const Top = () => (
+  <>
+    <span>orgs</span>
+  </>
+);
+
+const Body = () => (
+  <>
+    <Link href="/org?=innkeeper">
+      <div className="bg-panel p-4 border-border border-2 rounded-lg flex items-center gap-4 text-xl hover:opacity-50 transition-opacity">
+        <img src="logos/innkeeper.png" height="40px" width="40px" />
+        <p>innkeeper.eth</p>
+      </div>
+    </Link>
+  </>
+);

@@ -2,10 +2,12 @@ export const OrgPanels = (props: {
   org: {
     img: string;
     name: string;
+    slug: string;
   };
   locations: {
     name: "hyperfy" | "dcl";
     location: string;
+    href?: string;
   }[];
 }) => {
   return (
@@ -17,7 +19,10 @@ export const OrgPanels = (props: {
 
       <div className="flex gap-4 font-mono">
         {props.locations?.map((loc) => (
-          <div className="bg-panel p-4 border-border border-2 rounded-lg items-center gap-4 text-xl flex flex-col md:flex-row w-full md:w-fit">
+          <div
+            key={loc.name + loc.location}
+            className="bg-panel p-4 border-border border-2 rounded-lg items-center gap-4 text-xl flex flex-col md:flex-row w-full md:w-fit"
+          >
             <img src={`${VERSE[loc.name]?.img}`} height="40px" width="40px" />
             <div>
               <p className="text-xs">{VERSE[loc.name]?.name}</p>
