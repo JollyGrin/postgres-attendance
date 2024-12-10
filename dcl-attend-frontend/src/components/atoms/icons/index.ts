@@ -1,0 +1,1 @@
+export { IconChevDown } from "./IconChevDown";
