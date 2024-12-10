@@ -6,6 +6,7 @@
   --foreground: #cccccc;
   --background: #161616;
   --color-border: #292929;
+  --color-panel: #1d1d1d;
 }
 
 body {

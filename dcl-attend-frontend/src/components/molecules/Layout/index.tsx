@@ -1,9 +1,8 @@
 "use client";
 
-import { IconChevDown } from "@/components/atoms/icons";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 
-export default function Home() {
+export default function Layout(props: { top?: ReactNode; body?: ReactNode }) {
   const [isHovering, setIsHovering] = useState(false);
   const over = () => setIsHovering(true);
   const out = () => setIsHovering(false);
@@ -24,12 +23,19 @@ export default function Home() {
       </div>
       <div className="flex flex-col">
         <div className="border-border border-b-2 min-h-16 px-4 flex items-center gap-3 font-mono">
-          <span>org</span>
-          <span className="text-border font-bold">/</span>
-          <span>innkeeper</span>
-          <IconChevDown color="var(--color-border)" />
+          {props.top}
         </div>
+        <div className="p-4">{props.body}</div>
       </div>
     </div>
   );
 }
+
+/**
+
+          <span>org</span>
+          <span className="text-border font-bold">/</span>
+          <span>innkeeper</span>
+          <IconChevDown color="var(--color-border)" />
+ 
+ * */
