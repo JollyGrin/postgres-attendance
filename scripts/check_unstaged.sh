@@ -1,4 +1,5 @@
 #!/bin/bash
+# From https://github.com/coder/coder/blob/main/scripts/check_unstaged.sh
 
 set -euo pipefail
 # shellcheck source=scripts/lib.sh
