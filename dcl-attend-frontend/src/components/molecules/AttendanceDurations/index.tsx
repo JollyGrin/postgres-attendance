@@ -84,9 +84,9 @@ const Record = (record: {
   last?: number;
   totalDuration?: number;
 }) => {
-  if (!record.first || !record.last || !record?.totalDuration) return null;
-  const { data } = useDclPlayer(record.address);
+  const { data } = useDclPlayer(record?.address);
   const [avatar] = data?.avatars ?? [];
+  if (!record.first || !record.last || !record?.totalDuration) return null;
 
   function findLeft(enterTime: string) {
     if (!enterTime || !record.first || !record.totalDuration) return 0;
