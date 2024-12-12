@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 
-const baseUrl = "http://lorekeeper.xyz";
+const baseUrl = "https://lorekeeper.xyz";
 
 export type AttendRecord = {
   address: string;
